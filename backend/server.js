@@ -41,10 +41,7 @@ export const UserSchema = new mongoose.Schema({
   }]
 });
 
-//
-
 const User = mongoose.model("User", UserSchema);
-
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/my-fs-project";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
@@ -94,7 +91,31 @@ app.post("/login", async (req, res) => {
   }
 });
 
-  
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
+// USER REGISTRATION 
+app.post("/register",  async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const salt = bcrypt.genSaltSync();
+    if (password.length < 3) {
+      res.status(400).json({
+        success: false,
+        response: "Password must be at least 3 characters long"
+      });
+    } else {
+      const newUser = await new User({username: username, password: bcrypt.hashSync(password, salt)}).save();
+      res.status(201).json({
+        success: true,
+        response: {
+          username: newUser.username,
+          accessToken: newUser.accessToken,
+          id: newUser._id
+        }
+      });
+    }
+  } catch(error) {
+      res.status(400).json({
+        success: false,
+        response: error
+      });
+  }
+});
