@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import bcrypt from 'bcrypt';
 import mongoose from "mongoose";
+import crypto from "crypto";
 //import { UserSchema } from "./models/user";
 
 
@@ -72,9 +73,8 @@ app.post("/login", async (req, res) => {
         success: true,
         response: {
           username: user.username,
-          id: user._id,
-          accessToken: user.accessToken,
-          savedQuestion: user.savedQuestion
+          //id: user._id,
+          accessToken: user.accessToken, // remove -- preview? 
         }
       });
     } else {
@@ -103,12 +103,13 @@ app.post("/register",  async (req, res) => {
       });
     } else {
       const newUser = await new User({username: username, password: bcrypt.hashSync(password, salt)}).save();
+      console.log(newUser)
       res.status(201).json({
         success: true,
         response: {
           username: newUser.username,
           accessToken: newUser.accessToken,
-          id: newUser._id
+          //id: newUser._id
         }
       });
     }
@@ -118,4 +119,13 @@ app.post("/register",  async (req, res) => {
         response: error
       });
   }
+});
+
+
+app.get("/", (req, res) => {
+  res.send("My fullstack project");
+});
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });

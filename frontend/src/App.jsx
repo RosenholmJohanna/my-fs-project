@@ -1,15 +1,24 @@
-import { useState } from 'react'
+import React from 'react';
+import { Provider } from 'react-redux';
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import './App.css'
-import Login from './components/login/Login'
+import Login from './components/login/Login';
+import Register from './components/Register/Register';
+import user from './reducers/userReduser';
 
 
-function App() {
-  const [count, setCount] = useState(0)
+const reducer = combineReducers({
+  user: user.reducer
+});
+const store = configureStore({reducer});
+
+const App = () => {
 
   return (
-    <>
+    <Provider store = {store}>
       <Login />
-    </>
+      <Register />
+    </Provider>
   )
 }
 
