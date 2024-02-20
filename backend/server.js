@@ -56,8 +56,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-
 app.get("/", (req, res) => {
     res.send("My fs project");
   });
@@ -73,8 +71,9 @@ app.post("/login", async (req, res) => {
         success: true,
         response: {
           username: user.username,
-          //id: user._id,
+          id: user._id,
           accessToken: user.accessToken, // remove -- preview? 
+          savedQuestion: user.savedQuestion
         }
       });
     } else {
@@ -120,6 +119,49 @@ app.post("/register",  async (req, res) => {
       });
   }
 });
+
+//AUTHORIZATION USER
+const authenticateUser = async (req, res, next) => {
+  const accessToken = req.header("Authorization");
+  try {
+    const user = await User.findOne({accessToken: accessToken});
+    if (user) {
+      next();
+    } else {
+      res.status(401).json({
+        response: "Please log in",
+        success: false
+      })
+    }
+  } catch (error) {
+    res.status(400).json({
+      response: error,
+      success: false
+    })
+  }
+}
+
+// // GET SINGLE USER's PROFILE
+//app.get('/users/:id', authenticateUser)
+app.get('/users/:id', async (req, res) => {
+  const { id } = req.params
+  try {    
+    if (id) {
+      const userPage = await User.findById(id)
+      res.status(200).json({
+        success: true,
+        username: userPage.username,
+        id: userPage.id,
+        motivation: userPage.motivation,
+
+      })
+    } else {
+      res.status(404).json({ error: 'Not found' })
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid request' })
+  }
+})
 
 
 app.get("/", (req, res) => {

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector} from 'react-redux' //batch deprecated, enabled in reactDom 18
+import { useNavigate } from 'react-router-dom';
 import user from '../../reducers/userReduser';
+
 
 const BASE_URL = "http://localhost:8080";
 const LOGIN_URL = (slug) => `${BASE_URL}/${slug}`;
@@ -8,12 +10,18 @@ const LOGIN_URL = (slug) => `${BASE_URL}/${slug}`;
 
 const Login = () => {
   const accessToken = useSelector((store) => store.user.accessToken);
- // const userId = useSelector((store) => store.user.id) 
+  const userId = useSelector((store) => store.user.id) 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState("login");
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   
+
+  useEffect(() => {
+    if (accessToken) {
+      navigate(`/profile/${userId}`);
+  }}, [accessToken])
 
   const onFormSubmit =(event) => {
     event.preventDefault();
@@ -26,19 +34,20 @@ const Login = () => {
      fetch(LOGIN_URL(mode), options) // --> URL
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         if(data.success) { 
             dispatch(user.actions.setUsername(data.response.username)); 
             dispatch(user.actions.setId(data.response.id))
             dispatch(user.actions.setAccessToken(data.response.accessToken));
-            dispatch(user.actions.setSavedQuestion(data.response.motivation));
+            dispatch(user.actions.setSavedQuestion(data.response.savedQuestion));
+            //dispatch(user.actions.setSavedQuestion(data.response.motivation));
             dispatch(user.actions.setError(null));
-          
-        } else {
+            
+        }else {
             dispatch(user.actions.setUsername(null)); 
             dispatch(user.actions.setId(null))
             dispatch(user.actions.setAccessToken(null));
             dispatch(user.actions.setError(data.response));
-          
           }
       })
     }
