@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import './App.css'
@@ -15,10 +16,14 @@ const store = configureStore({reducer});
 const App = () => {
 
   return (
+  <BrowserRouter> 
     <Provider store = {store}>
-      <Login />
-      <Register />
+      <Routes>
+        <Route path='/login' element={<Login/>}></Route> 
+        <Route path='/register' element={<Register/>}></Route> 
+      </Routes>  
     </Provider>
+  </BrowserRouter> 
   )
 }
 

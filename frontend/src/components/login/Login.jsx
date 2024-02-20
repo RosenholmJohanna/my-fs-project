@@ -45,6 +45,7 @@ const Login = () => {
 
   return (
     <>
+    <p>Login</p>
      <form onSubmit={onFormSubmit} onChange={()=>setMode("login")}>
         <label htmlFor="username">Username</label>
          <input 

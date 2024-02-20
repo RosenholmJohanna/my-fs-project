@@ -41,6 +41,7 @@ const Register = () => {
   }
   return (
     <>
+    <p>Register</p>
           <form onSubmit={onFormSubmit}  onChange={()=>setMode("register")}>
             <label htmlFor="username">Username</label>
               <input 
